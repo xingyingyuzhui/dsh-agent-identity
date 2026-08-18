@@ -1,16 +1,22 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { isDsClawPath, isIdentityFile, renderIdentityPrompt, safeJoin } from '../identity-files.mjs'
+import { isDsClawPath, isIdentityFile, isWritableIdentityFile, renderIdentityPrompt, safeJoin } from '../identity-files.mjs'
 
 test('only DSclaw paths are identity roots', () => {
-  assert.equal(isDsClawPath('/Users/qin/.dsh/DSclaw/test1'), true)
-  assert.equal(isDsClawPath('/Users/qin/DSH'), false)
+  const home = '/Users/qin/.dsh'
+  assert.equal(isDsClawPath('/Users/qin/.dsh/DSclaw/test1', home), true)
+  assert.equal(isDsClawPath('/Users/qin/DSH', home), false)
+  assert.equal(isDsClawPath('/tmp/DSclaw/x/../../outside', '/tmp'), false)
+  assert.equal(isDsClawPath('/Users/qin/.dsh/DSclaw/test1/../../workspace-agents', home), false)
   assert.equal(isIdentityFile('SOUL.md'), true)
   assert.equal(isIdentityFile('TOOLS.md'), true)
   assert.equal(isIdentityFile('IDENTITY.md'), true)
   assert.equal(isIdentityFile('HEARTBEAT.md'), true)
   assert.equal(isIdentityFile('MEMORY.md'), true)
   assert.equal(isIdentityFile('secret.txt'), false)
+  assert.equal(isWritableIdentityFile('SOUL.md'), true)
+  assert.equal(isWritableIdentityFile('MEMORY.md'), false)
+  assert.equal(isWritableIdentityFile('USER.md'), false)
 })
 
 test('safeJoin refuses path escape', () => {

@@ -1,6 +1,6 @@
 {
   "name": "dsh-agent-identity",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Phase 1 Claw identity: inject core workspace files into the agent prompt. 把核心人设文件打进 Claw Agent 提示词。",
   "keywords": ["dsh", "dsh-plugin", "deepseek-harness", "agent", "identity"],
   "license": "MIT",

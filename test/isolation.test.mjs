@@ -23,8 +23,8 @@ test('two Claw agents do not share identity prompt text', async () => {
   assert.doesNotMatch(promptA, /Beta/)
   assert.match(promptB, /Beta/)
   assert.doesNotMatch(promptB, /Alpha/)
-  assert.equal(safeJoin(a, 'SOUL.md'), a + '/SOUL.md')
-  assert.notEqual(safeJoin(a, 'SOUL.md'), safeJoin(b, 'SOUL.md'))
+  assert.equal(safeJoin(a, 'SOUL.md', home), a + '/SOUL.md')
+  assert.notEqual(safeJoin(a, 'SOUL.md', home), safeJoin(b, 'SOUL.md', home))
 })
 
 test('a symlink into DSclaw still counts as an identity root', async () => {
@@ -32,7 +32,16 @@ test('a symlink into DSclaw still counts as an identity root', async () => {
   const real = await clawRoot(home, 'alpha')
   const alias = join(home, 'alias-alpha')
   await symlink(real, alias)
-  assert.equal(isDsClawPath(real), true)
-  assert.equal(isDsClawPath(alias), true)
-  assert.equal(isDsClawPath(home), false)
+  assert.equal(isDsClawPath(real, home), true)
+  assert.equal(isDsClawPath(alias, home), true)
+  assert.equal(isDsClawPath(home, home), false)
+})
+
+test('symlink out of DSclaw is not an identity root', async () => {
+  const home = await mkdtemp(join(tmpdir(), 'id-escape-'))
+  const outside = await mkdtemp(join(tmpdir(), 'id-out-'))
+  const real = await clawRoot(home, 'alpha')
+  const link = join(real, 'escape')
+  await symlink(outside, link)
+  assert.equal(isDsClawPath(link, home), false)
 })
