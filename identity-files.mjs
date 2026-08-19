@@ -3,6 +3,7 @@
 import { realpathSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { basename, dirname, join, relative, resolve } from 'node:path'
+import { escapesHome } from '../dsh-session-permissions/perm-path.mjs'
 
 export const IDENTITY_FILES = ['AGENTS.md', 'SOUL.md', 'TOOLS.md', 'IDENTITY.md', 'USER.md', 'HEARTBEAT.md', 'MEMORY.md', 'BOOTSTRAP.md']
 export const WRITABLE_IDENTITY_FILES = ['AGENTS.md', 'SOUL.md', 'TOOLS.md', 'IDENTITY.md', 'HEARTBEAT.md']
@@ -37,7 +38,7 @@ export function isClawHomePath(dshHome, path) {
   const clawRoot = existingRealpath(join(String(dshHome), CLAW_DIR))
   const target = existingRealpath(path)
   const rel = relative(clawRoot, target)
-  return rel !== '' && !rel.startsWith('..') && !rel.startsWith('/')
+  return rel !== '' && !escapesHome(rel)
 }
 
 export function isDsClawPath(path, dshHome) {
@@ -103,6 +104,7 @@ export function safeJoin(root, name, dshHome) {
   const base = resolve(String(root))
   const target = resolve(base, name)
   if (!isClawHomePath(dshHome || defaultDshHome(), target)) return ''
-  if (relative(base, target).startsWith('..')) return ''
+  const rel = relative(base, target)
+  if (rel && escapesHome(rel)) return ''
   return target
 }

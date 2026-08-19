@@ -1,4 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { clipText } from './identity-files.mjs'
 
 export const MEMORY_BUDGET = 6000
@@ -18,11 +19,11 @@ export function yesterdayKey(now = new Date()) {
 }
 
 export function memoryDir(root) {
-  return String(root || '').replace(/[/\\]+$/, '') + '/memory'
+  return join(String(root || '').replace(/[/\\]+$/, ''), 'memory')
 }
 
 export function dailyFile(root, key) {
-  return memoryDir(root) + '/' + key + '.md'
+  return join(memoryDir(root), key + '.md')
 }
 
 function readOptional(path, io) {
@@ -45,7 +46,7 @@ export function loadMemoryBundle(root, now = new Date(), io) {
   const today = dateKey(now)
   const yesterday = yesterdayKey(now)
   return {
-    memory: readOptional(String(root || '').replace(/[/\\]+$/, '') + '/MEMORY.md', io),
+    memory: readOptional(join(String(root || '').replace(/[/\\]+$/, ''), 'MEMORY.md'), io),
     today,
     yesterday,
     todayText: readOptional(dailyFile(root, today), io),

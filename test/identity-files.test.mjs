@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict'
+import { mkdtemp, mkdir } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import test from 'node:test'
-import { isDsClawPath, isIdentityFile, isWritableIdentityFile, renderIdentityPrompt, safeJoin } from '../identity-files.mjs'
+import { isClawHomePath, isDsClawPath, isIdentityFile, isWritableIdentityFile, renderIdentityPrompt, safeJoin } from '../identity-files.mjs'
 
 test('only DSclaw paths are identity roots', () => {
   const home = '/Users/qin/.dsh'
@@ -18,6 +21,17 @@ test('only DSclaw paths are identity roots', () => {
   assert.equal(isWritableIdentityFile('SOUL.md'), true)
   assert.equal(isWritableIdentityFile('MEMORY.md'), false)
   assert.equal(isWritableIdentityFile('USER.md'), false)
+})
+
+test('isClawHomePath uses join containment, not a slash prefix', async () => {
+  const home = await mkdtemp(join(tmpdir(), 'id-claw-'))
+  const inside = join(home, 'DSclaw', 'a')
+  const desktop = join(home, 'Desktop')
+  await mkdir(inside, { recursive: true })
+  await mkdir(desktop, { recursive: true })
+  assert.equal(isClawHomePath(home, inside), true)
+  assert.equal(isClawHomePath(home, desktop), false)
+  assert.equal(isClawHomePath(home, join(home, 'DSclaw')), false)
 })
 
 test('safeJoin refuses path escape', () => {

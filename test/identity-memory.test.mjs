@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import test from 'node:test'
-import { dateKey, loadMemoryBundle, renderMemoryPrompt, yesterdayKey } from '../identity-memory.mjs'
+import { dateKey, dailyFile, loadMemoryBundle, memoryDir, renderMemoryPrompt, yesterdayKey } from '../identity-memory.mjs'
 
 test('memory prompt injects MEMORY.md plus today and yesterday notes', async () => {
   const root = await mkdtemp(join(tmpdir(), 'idm-'))
@@ -19,6 +19,12 @@ test('memory prompt injects MEMORY.md plus today and yesterday notes', async () 
   assert.match(text, /Yesterday: fixed plus/)
   assert.match(text, /memory\/2026-08-18\.md/)
   assert.match(text, /memory\/2026-08-17\.md/)
+})
+
+test('memory paths use join, not slash concatenation', () => {
+  const root = join(tmpdir(), 'idm-win', 'agent')
+  assert.equal(memoryDir(root), join(root, 'memory'))
+  assert.equal(dailyFile(root, '2026-08-19'), join(root, 'memory', '2026-08-19.md'))
 })
 
 test('empty memory still tells the agent where to write', () => {
