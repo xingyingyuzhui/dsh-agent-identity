@@ -13,6 +13,7 @@ test('only DSclaw paths are identity roots', () => {
   assert.equal(isIdentityFile('IDENTITY.md'), true)
   assert.equal(isIdentityFile('HEARTBEAT.md'), true)
   assert.equal(isIdentityFile('MEMORY.md'), true)
+  assert.equal(isIdentityFile('BOOTSTRAP.md'), true)
   assert.equal(isIdentityFile('secret.txt'), false)
   assert.equal(isWritableIdentityFile('SOUL.md'), true)
   assert.equal(isWritableIdentityFile('MEMORY.md'), false)
@@ -53,4 +54,21 @@ test('USER MEMORY and HEARTBEAT stay off the identity prompt', () => {
   assert.doesNotMatch(text, /secret diary/)
   assert.doesNotMatch(text, /HEARTBEAT/)
   assert.doesNotMatch(text, /HEARTBEAT_OK/)
+})
+
+test('BOOTSTRAP.md is injected until deleted', () => {
+  const pending = renderIdentityPrompt({
+    'SOUL.md': 'soul',
+    'BOOTSTRAP.md': 'Ask what to call you.\n',
+  })
+  assert.match(pending, /BOOTSTRAP\.md/)
+  assert.match(pending, /Ask what to call you/)
+  assert.match(pending, /first-run is not done/)
+  assert.match(pending, /folder name/)
+  const done = renderIdentityPrompt({
+    'SOUL.md': 'soul',
+    'BOOTSTRAP.md': '',
+  })
+  assert.doesNotMatch(done, /BOOTSTRAP/)
+  assert.doesNotMatch(done, /first-run/)
 })

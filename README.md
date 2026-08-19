@@ -5,6 +5,7 @@
 文件机制：
 
 - `SOUL.md` / `IDENTITY.md` / `AGENTS.md` / `TOOLS.md`：每轮打进系统提示
+- `BOOTSTRAP.md`：新建时有，初次问答（你叫什么、怎么称呼用户）还没做完就一并注入；做完由 Agent 删掉
 - `USER.md` / `MEMORY.md` / 日记：由 `dsh-agent-memory` 在开场注入（有长度上限）
 - `HEARTBEAT.md`：只存盘，可在核心 Tab 编辑。巡检默认关（`every: 0`），这一层不会空闲 tick
 

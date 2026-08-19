@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
 import {
+  BOOTSTRAP_FILE,
   IDENTITY_FILES,
   PROMPT_FILES,
   WRITABLE_IDENTITY_FILES,
@@ -99,8 +100,9 @@ function cwdOf(agent) {
 
 function loadPrompt(root) {
   const files = {}
-  for (let i = 0; i < PROMPT_FILES.length; i++) {
-    const name = PROMPT_FILES[i]
+  const names = PROMPT_FILES.concat([BOOTSTRAP_FILE])
+  for (let i = 0; i < names.length; i++) {
+    const name = names[i]
     const path = safeJoin(root, name, dshHome)
     if (!path) continue
     try {
